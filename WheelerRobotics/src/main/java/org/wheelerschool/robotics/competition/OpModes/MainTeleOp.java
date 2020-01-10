@@ -32,5 +32,16 @@ public class MainTeleOp extends OpMode {
         } else {
             bot.armAngle.setPower(0);
         }
+
+        if (gamepad1.right_bumper) {
+            bot.grabberLeft.setPower(1.0f);
+            bot.grabberRight.setPower(1.0f);
+        } else if (gamepad1.left_bumper) {
+            bot.grabberLeft.setPower(-1.0f);
+            bot.grabberRight.setPower(-1.0f);
+        } else {
+            bot.grabberLeft.setPower(0f);
+            bot.grabberRight.setPower(0f);
+        }
     }
 }

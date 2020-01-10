@@ -1,8 +1,10 @@
 package org.wheelerschool.robotics.competition;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 /**
@@ -20,10 +22,15 @@ public class HardwareBot {
     public DcMotor backRight;
 
     /*
-    Arm/Grabber Hardware
+    Arm Hardware
      */
     public DcMotor armAngle;
 
+    /*
+    Grabber
+     */
+    public CRServo grabberLeft;
+    public CRServo grabberRight;
 
     /**
      * Set up drive motors
@@ -55,6 +62,16 @@ public class HardwareBot {
     }
 
     /**
+     *
+     */
+    private void grabberSetup() {
+        grabberLeft = hardwareMap.crservo.get("grabberLeft");
+        grabberLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        grabberRight = hardwareMap.crservo.get("grabberRight");
+        grabberRight.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    /**
      * Create robot hardware object. Will execute setup of all hardware
      * @param hw (HardwareMap); Supplied hardware map from OpMode
      */
@@ -63,5 +80,6 @@ public class HardwareBot {
 
         driveSetup();
         armSetup();
+        grabberSetup();
     }
 }
