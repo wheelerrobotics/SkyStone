@@ -1,5 +1,7 @@
 package org.wheelerschool.robotics.competition;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,6 +27,8 @@ public class HardwareBot {
     Arm Hardware
      */
     public DcMotor armAngle;
+    public DcMotor armExtL;
+    public DcMotor armExtR;
 
     /*
     Grabber
@@ -40,18 +44,22 @@ public class HardwareBot {
         frontLeft = hardwareMap.dcMotor.get("driveFrontLeft");
         frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //FR
         frontRight = hardwareMap.dcMotor.get("driveFrontRight");
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //BL
         backLeft = hardwareMap.dcMotor.get("driveBackLeft");
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //BR
         backRight = hardwareMap.dcMotor.get("driveBackRight");
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -59,6 +67,15 @@ public class HardwareBot {
      */
     private void armSetup() {
         armAngle = hardwareMap.dcMotor.get("armAngle");
+        armAngle.setDirection(DcMotorSimple.Direction.REVERSE);
+        armExtL = hardwareMap.dcMotor.get("armExtL");
+        armExtL.setDirection(DcMotorSimple.Direction.REVERSE);
+        armExtL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armExtR = hardwareMap.dcMotor.get("armExtR");
+        armExtR.setDirection(DcMotorSimple.Direction.FORWARD);
+        armExtR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -66,9 +83,36 @@ public class HardwareBot {
      */
     private void grabberSetup() {
         grabberLeft = hardwareMap.crservo.get("grabberLeft");
-        grabberLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        grabberLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         grabberRight = hardwareMap.crservo.get("grabberRight");
-        grabberRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        grabberRight.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
+
+    ///// RESET METHODS
+    /**
+     * Reset arm
+     */
+    public void resetArm() {
+        armExtL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        armExtL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    ////// CONTROL
+    /**
+     * Control arm motor
+     */
+    public void controlArmExt(DcMotor m, float p) {
+        if (p< 0 && m.getCurrentPosition() < 100) {
+            m.setPower(0);
+            Log.d("arm", "Limited");
+        } else {
+            m.setPower(p);
+        }
     }
 
     /**
