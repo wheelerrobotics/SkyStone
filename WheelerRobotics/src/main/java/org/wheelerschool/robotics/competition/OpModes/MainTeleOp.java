@@ -20,7 +20,7 @@ public class MainTeleOp extends OpMode {
     public void loop() {
         float drive_y = -gamepad1.left_stick_y;
         drive_y = Math.copySign((float) (Math.pow(3, Math.abs(drive_y))-1) / 2.f, drive_y);
-        float drive_x = 0; //gamepad1.left_stick_x;
+        float drive_x = gamepad1.right_stick_x;
         float drive_r = gamepad1.left_stick_x;
         drive_r = Math.copySign((float) (Math.pow(10, Math.abs(drive_r))-1) / 9.f, drive_r);
         drive_r *= 0.5f;
@@ -44,30 +44,29 @@ public class MainTeleOp extends OpMode {
 
         float armExtCtl = -gamepad1.right_stick_y;
 
-
-        if (gamepad1.dpad_up) {
-            bot.armAngle.setPower(1);
-            armExtCtl = 0.2f;
-        } else if (gamepad1.dpad_down) {
-            bot.armAngle.setPower(-1);
-        } else {
-            bot.armAngle.setPower(0);
-        }
-
         bot.controlArmExt(bot.armExtL, armExtCtl);
         bot.controlArmExt(bot.armExtR, armExtCtl);
 
         if (gamepad1.right_bumper) {
-            bot.grabberLeft.setPower(1.0f);
-            bot.grabberRight.setPower(1.0f);
-        } else if (gamepad1.left_bumper) {
-            bot.grabberLeft.setPower(-1.0f);
-            bot.grabberRight.setPower(-1.0f);
+            bot.grabberLeft.setPosition(0.5f);
+            bot.grabberRight.setPosition(0.5f);
         } else {
-            bot.grabberLeft.setPower(0f);
-            bot.grabberRight.setPower(0f);
+            bot.grabberLeft.setPosition(0.1f);
+            bot.grabberRight.setPosition(0.1f);
         }
 
-        //Log.d("enc", Integer.toString(bot.armExtL.getCurrentPosition()) + " | " + Integer.toString(bot.armExtR.getCurrentPosition()));
+        float intakeP = gamepad1.right_trigger - gamepad1.left_trigger;
+        bot.intakeL.setPower(intakeP);
+        bot.intakeR.setPower(intakeP);
+
+        /*
+        Log.d("enc",
+                (
+                        Integer.toString(bot.frontRight.getCurrentPosition())
+                        + " | " + Integer.toString(bot.frontLeft.getCurrentPosition())
+                        + " | " + Integer.toString(bot.backLeft.getCurrentPosition())
+                        + " | " + Integer.toString(bot.backRight.getCurrentPosition())
+                )
+        );*/
     }
 }
