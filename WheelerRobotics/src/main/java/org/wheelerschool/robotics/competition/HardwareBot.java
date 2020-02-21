@@ -40,6 +40,8 @@ public class HardwareBot {
     public Servo grabberLeft;
     public Servo grabberRight;
 
+    public Servo platformGrabber;
+
     /**
      * Set up drive motors
      */
@@ -102,6 +104,9 @@ public class HardwareBot {
         grabberLeft.setDirection(Servo.Direction.REVERSE);
         grabberRight = hardwareMap.servo.get("grabberRight");
         grabberRight.setDirection(Servo.Direction.FORWARD);
+
+        platformGrabber = hardwareMap.servo.get("platformGrabber");
+        platformGrabber.setDirection(Servo.Direction.FORWARD);
     }
 
 
@@ -117,6 +122,11 @@ public class HardwareBot {
         armExtR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void resetMotorEnc(DcMotor dcMotor) {
+        dcMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        dcMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
 
     ////// CONTROL
     /**
@@ -129,6 +139,72 @@ public class HardwareBot {
         } else {
             m.setPower(p);
         }
+    }
+
+    public void drivePower(float y, float x, float r) {
+        double scale = Math.hypot(x, y);
+        double robotAngle = Math.atan2(y, -x) - Math.PI / 4;
+        final double v1 = scale * Math.cos(robotAngle) + r;
+        final double v2 = scale * Math.sin(robotAngle) - r;
+        final double v3 = scale * Math.sin(robotAngle) + r;
+        final double v4 = scale * Math.cos(robotAngle) - r;
+
+        frontLeft.setPower(v1);
+        backLeft.setPower(v3);
+
+        frontRight.setPower(v2);
+        backRight.setPower(v4);
+    }
+
+    public void grab(boolean state) {
+        if (state) {
+            grabberLeft.setPosition(0.1f);
+            grabberRight.setPosition(0.1f);
+        } else {
+            grabberLeft.setPosition(0.5f);
+            grabberRight.setPosition(0.5f);
+        }
+    }
+
+    public void intakeOn() {
+        intakeManual(0.9f);
+    }
+
+    public void intakeManual(float power) {
+        intakeL.setPower(power);
+        intakeR.setPower(power);
+    }
+
+    private void _armExtPos(DcMotor m, int pos, float power) {
+        m.setTargetPosition(pos);
+        m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        m.setPower(power);
+    }
+    public void armExtPos(int position, float power) {
+        _armExtPos(armExtL, position, power);
+        _armExtPos(armExtR, position, power);
+    }
+
+    public void platform(boolean grab) {
+        if (grab) {
+            platformGrabber.setPosition(0.7f);
+        } else {
+            platformGrabber.setPosition(0.2f);
+        }
+    }
+
+    /// STATES
+    /**
+     *
+     */
+    public void stateIntake() {
+        intakeOn();
+        grab(false);
+    }
+
+    public void stateGrab() {
+        grab(true);
+        intakeManual(0);
     }
 
     /**

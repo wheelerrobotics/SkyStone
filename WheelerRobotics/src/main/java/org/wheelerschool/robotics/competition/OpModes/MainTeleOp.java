@@ -23,20 +23,14 @@ public class MainTeleOp extends OpMode {
         float drive_x = gamepad1.right_stick_x;
         float drive_r = gamepad1.left_stick_x;
         drive_r = Math.copySign((float) (Math.pow(10, Math.abs(drive_r))-1) / 9.f, drive_r);
-        drive_r *= 0.5f;
+        if (Math.abs(drive_r) > 0) {
+            float r_base = 0.2f;
+            drive_r *= 1f - r_base;
+            drive_r += Math.copySign(r_base, drive_r);
+            drive_r *= 0.5f;
+        }
 
-        double scale = Math.hypot(drive_x, drive_y);
-        double robotAngle = Math.atan2(drive_y, -drive_x) - Math.PI / 4;
-        final double v1 = scale * Math.cos(robotAngle) + drive_r;
-        final double v2 = scale * Math.sin(robotAngle) - drive_r;
-        final double v3 = scale * Math.sin(robotAngle) + drive_r;
-        final double v4 = scale * Math.cos(robotAngle) - drive_r;
-
-        bot.frontLeft.setPower(v1);
-        bot.backLeft.setPower(v3);
-
-        bot.frontRight.setPower(v2);
-        bot.backRight.setPower(v4);
+        bot.drivePower(drive_y, -drive_x, drive_r);
 
         telemetry.addData("Y", drive_y);
         telemetry.addData("X", drive_x);
@@ -44,20 +38,45 @@ public class MainTeleOp extends OpMode {
 
         float armExtCtl = -gamepad1.right_stick_y;
 
-        bot.controlArmExt(bot.armExtL, armExtCtl);
-        bot.controlArmExt(bot.armExtR, armExtCtl);
+        /*
+        if (Math.abs(armExtCtl) > 0) {
+            Log.d("update", "done");
+            bot.controlArmExt(bot.armExtL, armExtCtl);
+            bot.controlArmExt(bot.armExtR, armExtCtl);
+        }*/
 
+        /// STATES:
         if (gamepad1.right_bumper) {
-            bot.grabberLeft.setPosition(0.5f);
-            bot.grabberRight.setPosition(0.5f);
-        } else {
-            bot.grabberLeft.setPosition(0.1f);
-            bot.grabberRight.setPosition(0.1f);
+            bot.stateIntake();
+        }
+        if (gamepad1.a) {
+            bot.stateGrab();
+        }
+        if (gamepad1.b) {
+            bot.grab(false);
         }
 
-        float intakeP = gamepad1.right_trigger - gamepad1.left_trigger;
-        bot.intakeL.setPower(intakeP);
-        bot.intakeR.setPower(intakeP);
+        if (gamepad1.dpad_up) {
+            bot.armExtPos(3900, 0.5f);
+        }
+
+        if (gamepad1.dpad_down) {
+            bot.armExtPos(50, 0.2f);
+        }
+
+
+        if (gamepad1.x) {
+            bot.platform(true);
+        } else if (gamepad1.y) {
+            bot.platform(false);
+        }
+
+
+        /// MANUAL OVERRIDES:
+        if (gamepad1.left_trigger > 0) {
+            bot.intakeManual(-gamepad1.left_trigger);
+        }
+
 
         /*
         Log.d("enc",
@@ -68,5 +87,10 @@ public class MainTeleOp extends OpMode {
                         + " | " + Integer.toString(bot.backRight.getCurrentPosition())
                 )
         );*/
+        Log.d("enc",
+                ( Integer.toString(bot.armExtL.getCurrentPosition())
+                        + " | " + Integer.toString(bot.armExtR.getCurrentPosition())
+                )
+        );
     }
 }
