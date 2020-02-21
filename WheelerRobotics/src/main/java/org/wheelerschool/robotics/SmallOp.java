@@ -26,6 +26,10 @@ public class SmallOp extends OpMode {
         float leftPower = gamepad1.left_stick_y;
         float rightPower = gamepad1.right_stick_y;
 
+        // UPDATE motor powers
+        driveLeft.setPower(leftPower);
+        driveRight.setPower(rightPower);
+
         // UPDATE numbers on driver station display
         telemetry.addData("left", leftPower);
         telemetry.addData("right", rightPower);
