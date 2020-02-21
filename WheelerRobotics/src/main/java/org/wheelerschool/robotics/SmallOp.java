@@ -22,6 +22,12 @@ public class SmallOp extends OpMode {
     // RUNS CONTINUOUSLY (after start)
     @Override
     public void loop() {
+        // READ left and right joysticks (y-axis)
+        float leftPower = gamepad1.left_stick_y;
+        float rightPower = gamepad1.right_stick_y;
 
+        // UPDATE numbers on driver station display
+        telemetry.addData("left", leftPower);
+        telemetry.addData("right", rightPower);
     }
 }
