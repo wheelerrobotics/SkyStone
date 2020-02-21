@@ -2,6 +2,7 @@ package org.wheelerschool.robotics;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 // OpMode class
@@ -17,6 +18,10 @@ public class SmallOp extends OpMode {
         // SET UP motor objects:
         driveLeft = hardwareMap.dcMotor.get("driveLeft"); // use names defined in application
         driveRight = hardwareMap.dcMotor.get("driveRight");
+
+        // SET motor direction
+        driveLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        driveRight.setDirection(DcMotorSimple.Direction.REVERSE); // reverse one motor to fix rotation issue
     }
 
     // RUNS CONTINUOUSLY (after start)
