@@ -1,11 +1,13 @@
 package org.wheelerschool.robotics;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 // OpMode class
+@TeleOp
 public class SmallOp extends OpMode {
 
     // DEFINE motor objects:
